@@ -1,0 +1,31 @@
+﻿@model ToDoList.Models.TaskItem
+
+@{
+    ViewData["Title"] = "Добавить задачу";
+}
+
+<h2>Добавить задачу</h2>
+
+<!-- Форма для добавления новой задачи -->
+<form asp-action="Create" method="post">
+    <div>
+        <label for="Title">Название</label>
+        <input type="text" id="Title" name="Title" required>
+    </div>
+    
+    <div>
+        <label for="Description">Описание</label>
+        <textarea id="Description" name="Description"></textarea>
+    </div>
+
+    <div>
+        <label for="Tags">Теги (через запятую)</label>
+        <input type="text" id="Tags" name="Tags">
+    </div>
+
+    <!-- Кнопка для отправки формы -->
+    <button type="submit">Добавить</button>
+</form>
+
+<!-- Ссылка для возврата к списку задач -->
+<a href="@Url.Action("Index")">Назад к списку</a>
