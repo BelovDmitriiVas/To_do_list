@@ -22,6 +22,19 @@
         <p style="color: @data.ChangeColor;">@text</p>
     }
 </div>
+@inject To_Do_List_Prod.Services.WeatherService WeatherService
+
+<div style="position: fixed; left: 10px; bottom: 50px; padding: 10px; border: 1px solid #ddd;">
+    <h3>Погода сейчас</h3>
+    @{
+        var weather = await WeatherService.GetCurrentWeatherAsync();
+    }
+    @foreach (var city in weather)
+    {
+        <p><strong>@city.Key:</strong> @city.Value°C</p>
+    }
+</div>
+
 
 <header>
     <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">

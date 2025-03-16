@@ -11,11 +11,14 @@ builder.Services.AddDbContext<ToDoDbContext>(options =>
 // Добавляем поддержку MVC (контроллеры + представления)
 builder.Services.AddControllersWithViews();
 
-// Добавляем сервис курса валют
+// Регистрируем сервис курса валют
 builder.Services.AddHttpClient<CurrencyService>();
 
-// Добавляем обновление каждые 10 минут
+// Регистрируем обновление каждые 10 минут
 builder.Services.AddHostedService<CurrencyBackgroundService>();
+
+// Регистрируем прогноз погоды
+builder.Services.AddHttpClient<WeatherService>();
 
 var app = builder.Build();
 

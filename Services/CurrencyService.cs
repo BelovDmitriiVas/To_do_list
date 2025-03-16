@@ -56,7 +56,6 @@ namespace To_Do_List_Prod.Services
                 }
 
                 var jsonResponse = await response.Content.ReadAsStringAsync();
-                Console.WriteLine($"API Response for {fromCurrency}/{toCurrency}: {jsonResponse}"); // Лог API-ответа
 
                 using var jsonDoc = JsonDocument.Parse(jsonResponse);
 
