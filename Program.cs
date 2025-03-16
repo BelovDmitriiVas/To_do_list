@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using To_Do_List_Prod.Services;
 using ToDoList.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,7 +11,16 @@ builder.Services.AddDbContext<ToDoDbContext>(options =>
 // Добавляем поддержку MVC (контроллеры + представления)
 builder.Services.AddControllersWithViews();
 
+// Добавляем сервис курса валют
+builder.Services.AddHttpClient<CurrencyService>();
+
+// Добавляем обновление каждые 10 минут
+builder.Services.AddHostedService<CurrencyBackgroundService>();
+
 var app = builder.Build();
+
+
+
 
 // Настройка обработки ошибок (используется, если приложение не в режиме разработки)
 if (!app.Environment.IsDevelopment())
