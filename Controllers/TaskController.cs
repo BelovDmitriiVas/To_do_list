@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using ToDoList.Models;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Text.Json;
 
 namespace ToDoList.Controllers
 {
@@ -95,5 +96,63 @@ namespace ToDoList.Controllers
             var completedTasks = await _context.CompletedTasks.ToListAsync();
             return View(completedTasks);
         }
+        // Экспорт в Json-файл
+        public async Task<IActionResult> Export()
+        {
+            var tasks = await _context.TaskItems.ToListAsync();
+            var options = new JsonSerializerOptions
+            {
+                WriteIndented = true,
+                Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+            };
+            var json = JsonSerializer.Serialize(tasks, options);
+
+            var bytes = System.Text.Encoding.UTF8.GetBytes(json);
+            return File(bytes, "application/json", "tasks_export.json");
+        }
+        
+        // Импорт Json-файлов
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Import(IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+            {
+                ModelState.AddModelError("", "Файл не выбран.");
+                return RedirectToAction(nameof(Index));
+            }
+
+            try
+            {
+                using var stream = new StreamReader(file.OpenReadStream());
+                var content = await stream.ReadToEndAsync();
+
+                var tasks = JsonSerializer.Deserialize<List<TaskItem>>(content, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+
+                if (tasks != null)
+                {
+                    foreach (var task in tasks)
+                    {
+                        // Проставим дату, если не указана
+                        if (task.CreatedAt == default)
+                            task.CreatedAt = DateTime.UtcNow;
+
+                        _context.TaskItems.Add(task);
+                    }
+
+                    await _context.SaveChangesAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Ошибка импорта: {ex.Message}");
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+
     }
 }

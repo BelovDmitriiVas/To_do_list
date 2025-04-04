@@ -13,6 +13,13 @@
     ViewData["Title"] = "Список задач";
 }
 
+<!-- Кнопка экспорта и импорта в JSON  -->
+<a href="@Url.Action("Export")">Экспорт в JSON</a> |
+<form asp-action="Import" method="post" enctype="multipart/form-data" style="margin-top: 10px;">
+    <input type="file" name="file" required />
+    <button type="submit">Импорт JSON</button>
+</form>
+
 <h2>Список задач</h2>
 
 <!-- Форма фильтрации по тегу -->
@@ -22,6 +29,8 @@
     <button type="submit">Фильтровать</button>
     <a href="@Url.Action("Index")">Сбросить</a>
 </form>
+
+
 
 <!-- Таблица с задачами -->
 <table style="width: 100%; border-collapse: collapse; text-align: left;">
