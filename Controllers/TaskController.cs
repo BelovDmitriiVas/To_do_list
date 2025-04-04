@@ -153,6 +153,19 @@ namespace ToDoList.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+        // Удаление задач из архива
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteCompleted(int id)
+        {
+            var task = await _context.CompletedTasks.FindAsync(id);
+            if (task != null)
+            {
+                _context.CompletedTasks.Remove(task);
+                await _context.SaveChangesAsync();
+            }
+            return RedirectToAction(nameof(Completed));
+        }
 
     }
 }

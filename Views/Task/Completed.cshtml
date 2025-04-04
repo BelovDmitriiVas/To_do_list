@@ -15,6 +15,7 @@
         <th style="padding: 10px; border-right: 1px solid #ddd;">Теги</th>
         <th style="padding: 10px;">Дата создания</th>
         <th style="padding: 10px;">Дата выполнения</th>
+        <th style="padding: 10px;">Удалить</th>
     </tr>
     </thead>
     <tbody>
@@ -26,10 +27,17 @@
             <td style="padding: 10px; border-right: 1px solid #ddd;">@task.Tags</td>
             <td style="padding: 10px;">@task.CreatedAt.ToString("yyyy-MM-dd HH:mm")</td>
             <td style="padding: 10px;">@task.CompletedAt.ToString("yyyy-MM-dd HH:mm")</td>
+            <td style="padding: 10px;">
+                <form asp-action="DeleteCompleted" method="post" style="display:inline;">
+                    <input type="hidden" name="id" value="@task.Id" />
+                    <button type="submit" style="color: red;">Удалить</button>
+                </form>
+            </td>
         </tr>
     }
     </tbody>
 </table>
+
 
 <!-- Ссылка для возврата к списку активных задач -->
 <p>
