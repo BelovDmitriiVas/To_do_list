@@ -8,7 +8,7 @@
 
 - **C# / .NET 9**
 - **ASP.NET Core MVC**
-- **Entity Framework Core **
+- **Entity Framework Core**
 - **PostgreSQL**
 - **Razor Views**
 - **JSON** (импорт / экспорт)
