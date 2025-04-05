@@ -1,6 +1,6 @@
 #  To-Do List (ASP.NET Core MVC)
 
-**To-Do List** — одностраничное веб-приложение для управления задачами, реализованное на C# с использованием ASP.NET Core MVC и PostgreSQL.
+**To-Do List** — веб-приложение для управления задачами, реализованное на C# с использованием ASP.NET Core MVC и PostgreSQL.
 
 ---
 
