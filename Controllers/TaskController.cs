@@ -96,7 +96,7 @@ namespace ToDoList.Controllers
             var completedTasks = await _context.CompletedTasks.ToListAsync();
             return View(completedTasks);
         }
-        // Экспорт в Json-файл
+        // Экспорт в Json-файл актуальных задач
         public async Task<IActionResult> Export()
         {
             var tasks = await _context.TaskItems.ToListAsync();
@@ -152,6 +152,21 @@ namespace ToDoList.Controllers
             }
 
             return RedirectToAction(nameof(Index));
+        }
+        // Экспорт в Json-файлов из архива
+        public async Task<IActionResult> ExportCompleted()
+        {
+            var completed = await _context.CompletedTasks.ToListAsync();
+            var options = new JsonSerializerOptions
+            {
+                WriteIndented = true,
+                Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+            };
+
+            var json = JsonSerializer.Serialize(completed, options);
+            var bytes = System.Text.Encoding.UTF8.GetBytes(json);
+
+            return File(bytes, "application/json", "completed_tasks_export.json");
         }
         // Удаление задач из архива
         [HttpPost]
