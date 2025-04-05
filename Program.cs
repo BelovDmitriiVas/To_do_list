@@ -4,20 +4,20 @@ using ToDoList.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Добавляем поддержку PostgreSQL и регистрируем DbContext
+// Добавление поддержки PostgreSQL и регистрирация DbContext
 builder.Services.AddDbContext<ToDoDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Добавляем поддержку MVC (контроллеры + представления)
+// Добавление поддержки MVC 
 builder.Services.AddControllersWithViews();
 
-// Регистрируем сервис курса валют
+// Регистрирация сервиса курса валют
 builder.Services.AddHttpClient<CurrencyService>();
 
-// Регистрируем обновление каждые 10 минут
+// Регистрирация обновления каждые 10 минут
 builder.Services.AddHostedService<CurrencyBackgroundService>();
 
-// Регистрируем прогноз погоды
+// Регистрирация прогноз погоды
 builder.Services.AddHttpClient<WeatherService>();
 
 var app = builder.Build();
@@ -25,29 +25,27 @@ var app = builder.Build();
 
 
 
-// Настройка обработки ошибок (используется, если приложение не в режиме разработки)
+// Настройка обработки ошибок 
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Home/Error"); // Перенаправляет на страницу ошибки
-    app.UseHsts(); // Включает защиту HSTS (HTTP Strict Transport Security)
+    app.UseExceptionHandler("/Home/Error"); 
+    app.UseHsts(); 
 }
 
 // Перенаправление всех HTTP-запросов на HTTPS
 app.UseHttpsRedirection();
 
-// Включаем поддержку статических файлов (CSS, JS, изображения)
+// Включение поддержки статических файлов (CSS, JS, изображения)
 app.UseStaticFiles();
 
-// Включаем систему маршрутизации
+// Включение системы маршрутизации
 app.UseRouting();
 
-// Включаем систему авторизации (пока не используется, но может понадобиться в будущем)
-app.UseAuthorization();
 
-// Настраиваем маршруты контроллеров (по умолчанию TaskController -> Index)
+// Настраивание маршрута контроллеров (по умолчанию TaskController -> Index)
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Task}/{action=Index}/{id?}");
 
-// Запускаем приложение
+// Запуск приложения
 app.Run();

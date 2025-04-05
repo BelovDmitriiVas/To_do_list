@@ -10,8 +10,6 @@ namespace ToDoList.Controllers
     public class TaskController : Controller
     {
         private readonly ToDoDbContext _context;
-
-        // Конструктор контроллера, получает экземпляр контекста базы данных через DI
         public TaskController(ToDoDbContext context)
         {
             _context = context;
@@ -22,12 +20,12 @@ namespace ToDoList.Controllers
         {
             var tasks = _context.TaskItems.AsQueryable();
 
-            if (!string.IsNullOrEmpty(tag)) // Фильтруем задачи по тегу, если он передан
+            if (!string.IsNullOrEmpty(tag)) 
             {
                 tasks = tasks.Where(t => t.Tags != null && t.Tags.Contains(tag));
             }
 
-            var taskList = await tasks.ToListAsync(); // Загружаем задачи в список
+            var taskList = await tasks.ToListAsync(); 
             return View(taskList);
         }
 
@@ -46,7 +44,7 @@ namespace ToDoList.Controllers
             {
                 _context.TaskItems.Add(task);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index)); // Перенаправление на список задач
+                return RedirectToAction(nameof(Index)); 
             }
             return View(task);
         }
@@ -73,18 +71,17 @@ namespace ToDoList.Controllers
             var task = await _context.TaskItems.FindAsync(id);
             if (task != null)
             {
-                // Создаём копию задачи в таблице "выполненные"
                 var completedTask = new CompletedTask
                 {
                     Title = task.Title,
                     Description = task.Description,
                     Tags = task.Tags,
                     CreatedAt = task.CreatedAt,
-                    CompletedAt = DateTime.UtcNow // Устанавливаем дату выполнения
+                    CompletedAt = DateTime.UtcNow 
                 };
 
                 _context.CompletedTasks.Add(completedTask);
-                _context.TaskItems.Remove(task); // Удаляем из актуальных задач
+                _context.TaskItems.Remove(task); 
                 await _context.SaveChangesAsync();
             }
             return RedirectToAction(nameof(Index));
@@ -136,7 +133,6 @@ namespace ToDoList.Controllers
                 {
                     foreach (var task in tasks)
                     {
-                        // Проставим дату, если не указана
                         if (task.CreatedAt == default)
                             task.CreatedAt = DateTime.UtcNow;
 

@@ -72,7 +72,7 @@ namespace To_Do_List_Prod.Services
             catch (Exception ex)
             {
                 Console.WriteLine($"Exception fetching exchange rate: {ex.Message}");
-                return 0; // Возвращаем 0, чтобы сервер не падал
+                return 0; 
             }
         }
 
