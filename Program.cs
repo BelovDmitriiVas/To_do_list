@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using To_Do_List_Prod.Services;
 using ToDoList.Models;
+using ToDoList.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +11,9 @@ builder.Services.AddDbContext<ToDoDbContext>(options =>
 
 // Добавление поддержки MVC 
 builder.Services.AddControllersWithViews();
+
+// Регистрация сервиса импорта-экспорта
+builder.Services.AddScoped<ImportExportService>();
 
 // Регистрирация сервиса курса валют
 builder.Services.AddHttpClient<CurrencyService>();

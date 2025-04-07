@@ -2,18 +2,23 @@
 using Microsoft.EntityFrameworkCore;
 using ToDoList.Models;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using System.Text.Json;
+using ToDoList.Services;
 
 namespace ToDoList.Controllers
 {
     public class TaskController : Controller
     {
-        private readonly ToDoDbContext _context;
-        public TaskController(ToDoDbContext context)
+        private readonly ImportExportService _importExport;
+
+        public TaskController(ToDoDbContext context, ImportExportService importExport)
         {
             _context = context;
+            _importExport = importExport;
         }
+        private readonly ToDoDbContext _context;
 
         // Метод для отображения списка задач с возможностью фильтрации по тегам
         public async Task<IActionResult> Index(string? tag)
@@ -97,14 +102,8 @@ namespace ToDoList.Controllers
         public async Task<IActionResult> Export()
         {
             var tasks = await _context.TaskItems.ToListAsync();
-            var options = new JsonSerializerOptions
-            {
-                WriteIndented = true,
-                Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
-            };
-            var json = JsonSerializer.Serialize(tasks, options);
-
-            var bytes = System.Text.Encoding.UTF8.GetBytes(json);
+            var json = _importExport.ExportTasks(tasks);
+            var bytes = Encoding.UTF8.GetBytes(json);
             return File(bytes, "application/json", "tasks_export.json");
         }
         
@@ -124,23 +123,7 @@ namespace ToDoList.Controllers
                 using var stream = new StreamReader(file.OpenReadStream());
                 var content = await stream.ReadToEndAsync();
 
-                var tasks = JsonSerializer.Deserialize<List<TaskItem>>(content, new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true
-                });
-
-                if (tasks != null)
-                {
-                    foreach (var task in tasks)
-                    {
-                        if (task.CreatedAt == default)
-                            task.CreatedAt = DateTime.UtcNow;
-
-                        _context.TaskItems.Add(task);
-                    }
-
-                    await _context.SaveChangesAsync();
-                }
+                await _importExport.ImportTasksToDbAsync(content, _context);
             }
             catch (Exception ex)
             {
@@ -153,15 +136,8 @@ namespace ToDoList.Controllers
         public async Task<IActionResult> ExportCompleted()
         {
             var completed = await _context.CompletedTasks.ToListAsync();
-            var options = new JsonSerializerOptions
-            {
-                WriteIndented = true,
-                Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
-            };
-
-            var json = JsonSerializer.Serialize(completed, options);
+            var json = _importExport.ExportTasks(completed);
             var bytes = System.Text.Encoding.UTF8.GetBytes(json);
-
             return File(bytes, "application/json", "completed_tasks_export.json");
         }
         // Удаление задач из архива
@@ -177,6 +153,8 @@ namespace ToDoList.Controllers
             }
             return RedirectToAction(nameof(Completed));
         }
+        
+
 
     }
 }
