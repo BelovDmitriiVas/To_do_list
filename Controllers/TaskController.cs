@@ -11,29 +11,24 @@ namespace ToDoList.Controllers
 {
     public class TaskController : Controller
     {
+        private readonly ToDoDbContext _context;
         private readonly ImportExportService _importExport;
+        private readonly TaskService _taskService; 
 
-        public TaskController(ToDoDbContext context, ImportExportService importExport)
+        public TaskController(ToDoDbContext context, ImportExportService importExport, TaskService taskService)
         {
             _context = context;
             _importExport = importExport;
+            _taskService = taskService; 
         }
-        private readonly ToDoDbContext _context;
 
         // Метод для отображения списка задач с возможностью фильтрации по тегам
         public async Task<IActionResult> Index(string? tag)
         {
-            var tasks = _context.TaskItems.AsQueryable();
-
-            if (!string.IsNullOrEmpty(tag)) 
-            {
-                tasks = tasks.Where(t => t.Tags != null && t.Tags.Contains(tag));
-            }
-
-            var taskList = await tasks.ToListAsync(); 
+            var taskList = await _taskService.GetFilteredTasksAsync(tag);
             return View(taskList);
         }
-
+        
         // Метод для отображения формы добавления новой задачи
         public IActionResult Create()
         {
@@ -47,8 +42,7 @@ namespace ToDoList.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.TaskItems.Add(task);
-                await _context.SaveChangesAsync();
+                await _taskService.CreateAsync(task);
                 return RedirectToAction(nameof(Index)); 
             }
             return View(task);
@@ -59,12 +53,7 @@ namespace ToDoList.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
-            var task = await _context.TaskItems.FindAsync(id);
-            if (task != null)
-            {
-                _context.TaskItems.Remove(task);
-                await _context.SaveChangesAsync();
-            }
+            await _taskService.DeleteAsync(id);
             return RedirectToAction(nameof(Index));
         }
 
@@ -73,31 +62,26 @@ namespace ToDoList.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Complete(int id)
         {
-            var task = await _context.TaskItems.FindAsync(id);
-            if (task != null)
-            {
-                var completedTask = new CompletedTask
-                {
-                    Title = task.Title,
-                    Description = task.Description,
-                    Tags = task.Tags,
-                    CreatedAt = task.CreatedAt,
-                    CompletedAt = DateTime.UtcNow 
-                };
-
-                _context.CompletedTasks.Add(completedTask);
-                _context.TaskItems.Remove(task); 
-                await _context.SaveChangesAsync();
-            }
+            await _taskService.CompleteAsync(id);
             return RedirectToAction(nameof(Index));
         }
 
         // Метод для отображения списка выполненных задач (архив)
         public async Task<IActionResult> Completed()
         {
-            var completedTasks = await _context.CompletedTasks.ToListAsync();
+            var completedTasks = await _taskService.GetCompletedTasksAsync();
             return View(completedTasks);
         }
+        
+        // Удаление задач из архива
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteCompleted(int id)
+        {
+            await _taskService.DeleteCompletedAsync(id);
+            return RedirectToAction(nameof(Completed));
+        }
+        
         // Экспорт в Json-файл актуальных задач
         public async Task<IActionResult> Export()
         {
@@ -132,6 +116,7 @@ namespace ToDoList.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+        
         // Экспорт в Json-файлов из архива
         public async Task<IActionResult> ExportCompleted()
         {
@@ -140,21 +125,5 @@ namespace ToDoList.Controllers
             var bytes = System.Text.Encoding.UTF8.GetBytes(json);
             return File(bytes, "application/json", "completed_tasks_export.json");
         }
-        // Удаление задач из архива
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteCompleted(int id)
-        {
-            var task = await _context.CompletedTasks.FindAsync(id);
-            if (task != null)
-            {
-                _context.CompletedTasks.Remove(task);
-                await _context.SaveChangesAsync();
-            }
-            return RedirectToAction(nameof(Completed));
-        }
-        
-
-
     }
 }

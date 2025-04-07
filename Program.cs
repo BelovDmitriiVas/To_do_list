@@ -12,6 +12,9 @@ builder.Services.AddDbContext<ToDoDbContext>(options =>
 // Добавление поддержки MVC 
 builder.Services.AddControllersWithViews();
 
+// Регистрация просмотра задач
+builder.Services.AddTransient<TaskService>();
+
 // Регистрация сервиса импорта-экспорта
 builder.Services.AddScoped<ImportExportService>();
 
