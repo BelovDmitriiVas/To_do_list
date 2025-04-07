@@ -1,10 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ToDoList.Models;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using System.Text.Json;
 using ToDoList.Services;
 
 namespace ToDoList.Controllers
@@ -12,14 +9,14 @@ namespace ToDoList.Controllers
     public class TaskController : Controller
     {
         private readonly ToDoDbContext _context;
-        private readonly ImportExportService _importExport;
-        private readonly TaskService _taskService; 
+        private readonly IImportExportService _importExport;
+        private readonly ITaskService _taskService;
 
-        public TaskController(ToDoDbContext context, ImportExportService importExport, TaskService taskService)
+        public TaskController(ToDoDbContext context, IImportExportService importExport, ITaskService taskService)
         {
             _context = context;
             _importExport = importExport;
-            _taskService = taskService; 
+            _taskService = taskService;
         }
 
         // Метод для отображения списка задач с возможностью фильтрации по тегам

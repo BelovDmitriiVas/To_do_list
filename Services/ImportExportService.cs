@@ -4,7 +4,7 @@ using ToDoList.Models;
 
 namespace ToDoList.Services
 {
-    public class ImportExportService
+    public class ImportExportService : IImportExportService
     {
         public string ExportTasks<T>(List<T> items)
         {

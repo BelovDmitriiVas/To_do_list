@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ToDoList.Services
 {
-    public class TaskService
+    public class TaskService : ITaskService
     {
         private readonly ToDoDbContext _context;
 

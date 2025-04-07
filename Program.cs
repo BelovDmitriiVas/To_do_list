@@ -13,10 +13,10 @@ builder.Services.AddDbContext<ToDoDbContext>(options =>
 builder.Services.AddControllersWithViews();
 
 // Регистрация просмотра задач
-builder.Services.AddTransient<TaskService>();
+builder.Services.AddTransient<ITaskService, TaskService>();
 
 // Регистрация сервиса импорта-экспорта
-builder.Services.AddScoped<ImportExportService>();
+builder.Services.AddTransient<IImportExportService, ImportExportService>();
 
 // Регистрирация сервиса курса валют
 builder.Services.AddHttpClient<CurrencyService>();
