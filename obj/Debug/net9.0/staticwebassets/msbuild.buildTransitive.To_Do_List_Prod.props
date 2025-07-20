@@ -1,3 +1,0 @@
-﻿<Project>
-  <Import Project="..\buildMultiTargeting\To_Do_List_Prod.props" />
-</Project>

@@ -27,7 +27,15 @@ builder.Services.AddHostedService<CurrencyBackgroundService>();
 // Регистрирация прогноз погоды
 builder.Services.AddHttpClient<WeatherService>();
 
+builder.WebHost.UseUrls("http://0.0.0.0:80");
+
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<ToDoDbContext>();
+    db.Database.Migrate();
+}
 
 
 
