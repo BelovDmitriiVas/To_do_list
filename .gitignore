@@ -1,3 +1,20 @@
+# Каталоги сборки
 bin/
 obj/
+**/bin/
+**/obj/
+
+# Rider / JetBrains
 .idea/
+*.DotSettings.user
+
+# Логи и временные файлы
+*.log
+*.tmp
+
+# Локальные настройки запуска (не для общего репо)
+**/launchSettings.json
+
+
+# Временные скрипты, не предназначенные для коммита
+init-test-structure.sh
