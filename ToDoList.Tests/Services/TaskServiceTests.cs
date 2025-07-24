@@ -1,4 +1,3 @@
-// TODO: Write unit tests in Services/TaskServiceTests.cs
 using Xunit;
 using ToDoList.Services;
 using ToDoList.Models;
